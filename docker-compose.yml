@@ -1,0 +1,28 @@
+# Environment variables are stored in .env file
+# The file must be in the same directory as this docker-compose file (project's root directory)
+# Make sure that you create one and specify inside it the following key-value pairs:
+# - MYSQL_ROOT_PASSWORD=your_root_password
+
+version: '3'
+services:
+  mysql-db:
+    container_name: mysql-db
+    image: mysql:debian
+    restart: unless-stopped
+    ports:
+      # Open port 3307 for Host and 3306 for other services here:
+      # - locally running application or DBMS must connect via port 3307
+      # - services running in the same Docker network must connect via port 3306
+      - '3307:3306' 
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?it must be defined in .env file}
+      - TZ=Europe/Helsinki
+    volumes:
+      # # MySQL Docker image can run initialization scripts: https://dev.mysql.com/doc/refman/8.0/en/docker-mysql-more-topics.html#docker-additional-init
+      # # Scripts must be .sql or .sh and they need to be placed into /docker-entrypoint-initdb.d/
+      # # Scripts execution order is done alphabetically!
+      # # :ro is to tell Docker to attach the volume as "read-only"!
+      - ./db:/docker-entrypoint-initdb.d/:ro
+      # Set the character set and collation to utf8mb4 and utf8mb4_swedish_ci respectively
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_swedish_ci']
+    
