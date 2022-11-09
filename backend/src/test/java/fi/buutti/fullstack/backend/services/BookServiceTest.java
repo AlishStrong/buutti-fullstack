@@ -1,9 +1,7 @@
 package fi.buutti.fullstack.backend.services;
 
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,11 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -49,6 +45,28 @@ public class BookServiceTest {
         assertTrue(booksPage.hasContent());
         assertTrue(booksPage.getContent().stream().map(b -> b.getAuthor()).filter(a -> initialAuthor.equals(a))
                 .collect(Collectors.toList()).size() > 0);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "page",
+            "size"
+    })
+    public void it_should_fail_if_page_parameters_are_invalid(String parameter) {
+        switch (parameter) {
+            case "size":
+                assertThrows(BookException.class, () -> {
+                    service.getPageOfBooks(0, 0);
+                }, "Size parameter must be a positive number!");
+
+                assertThrows(BookException.class, () -> {
+                    service.getPageOfBooks(0, -1);
+                }, "Size parameter must be a positive number!");
+            default:
+                assertThrows(BookException.class, () -> {
+                    service.getPageOfBooks(-1, 10);
+                }, "Page parameter cannot be a negative number!");
+        }
     }
 
     @Test

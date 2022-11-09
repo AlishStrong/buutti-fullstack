@@ -1,8 +1,8 @@
 package fi.buutti.fullstack.backend.services;
 
-import fi.buutti.fullstack.backend.handlers.BookException;
-import fi.buutti.fullstack.backend.models.Book;
-import fi.buutti.fullstack.backend.repositories.BookRepository;
+import java.text.MessageFormat;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -11,8 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
-import java.util.Objects;
+import fi.buutti.fullstack.backend.handlers.BookException;
+import fi.buutti.fullstack.backend.models.Book;
+import fi.buutti.fullstack.backend.repositories.BookRepository;
 
 @Service
 public class BookService {
@@ -21,6 +22,20 @@ public class BookService {
     private BookRepository repository;
 
     public Page<Book> getPageOfBooks(Integer pageNumber, Integer size) {
+        if (Objects.isNull(pageNumber) || pageNumber < 0) {
+            throw new BookException(
+                "Page parameter cannot be a negative number!",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        if (Objects.isNull(size) || size <= 0) {
+            throw new BookException(
+                "Size parameter must be a positive number!",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
         return repository.findAll(PageRequest.of(pageNumber, size));
     }
 
