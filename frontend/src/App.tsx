@@ -1,10 +1,10 @@
 import './App.css';
+import BookList from './components/BookList';
 
 const App = () => {
-
   return (
-    <div>
-      Frontend
+    <div className='min-h-screen max-w-5xl mx-auto'>
+      <BookList />
     </div>
   );
 };
