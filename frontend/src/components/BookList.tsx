@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { SpringDataPage } from '../models/SpringDataPage';
 import { Book } from '../models/Book';
@@ -12,10 +12,12 @@ import BookListEmptyNotice from './BookListEmptyNotice';
 
 const BookList = () => {
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const [books, setBooks] = useState<Array<Book>>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+
+  const pageSizeInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getBooks();
@@ -24,7 +26,6 @@ const BookList = () => {
   const getBooks = () => {
     axios.get(`/api/books?page=${page}&size=${size}`)
       .then((response: AxiosResponse<SpringDataPage<Book>, any>) => {
-        console.log('response', response);
         if (response.status === 200) {
           return response.data;
         } else if (response.status === 204) {
@@ -57,16 +58,48 @@ const BookList = () => {
     setPage(pageIndex);
   };
 
+  const setPageSize = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (pageSizeInputRef && pageSizeInputRef.current?.value) {
+      const newPageSize = +pageSizeInputRef.current.value;
+      // reset page index if the current page is bigger or equal than a new total number of pages coming from the newPageSize
+      // if that's a case, then set the page to the last index of the new paging system
+      if ((totalElements / newPageSize) <= page) {
+        setPage(Math.floor(totalElements / newPageSize));
+      }
+      setSize(newPageSize);
+    } else {
+      setSize(10);
+    }
+  };
+
   if (books.length > 0) {
     return (
       <div id='book-list' className='my-4 sm:m-6 lg:m-8 overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg'>
         <table id='book-list-table' className='w-full divide-y divide-gray-300'>
           <thead>
             <tr>
-              <th className='p-4 sm:px-8 flex justify-between items-center'>
-                <div>
-                    Filters here
-                </div>
+              <th className='p-4 sm:px-8 flex gap-y-4 flex-col justify-between sm:items-end sm:flex-row'>
+                <form id='book-list-set-page-size' onSubmit={(e) => setPageSize(e)} className='flex flex-col min-w-min'>
+                  <label htmlFor="book-list-set-page-size-input" className="block font-medium text-left">Set page size</label>
+                  <div className="relative mt-1 rounded-md shadow-sm flex">
+                    <input
+                      type="number"
+                      min={1}
+                      max={totalElements}
+                      name="pageSize"
+                      ref={pageSizeInputRef}
+                      id="book-list-set-page-size-input"
+                      className="block w-full rounded-l-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm sm:w-40"
+                      placeholder={`min 1 - max ${totalElements}`}
+                    />
+                    <button type='submit' className='px-4 rounded-r-md border border-transparent bg-indigo-600 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
+                      SET
+                    </button>
+
+                  </div>
+                </form>
+
                 <button
                   type='button'
                   className='inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto'
