@@ -3,16 +3,12 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 import { SpringDataPage } from '../models/SpringDataPage';
 import { Book } from '../models/Book';
 import {
-  ExclamationTriangleIcon,
   PlusCircleIcon,
-  ArrowPathIcon,
   BookOpenIcon,
 } from '@heroicons/react/24/outline';
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon
-} from '@heroicons/react/20/solid';
+import BookListPagination from './BookListPagination';
+import BookListEmptyNotice from './BookListEmptyNotice';
 
 const BookList = () => {
   const [page, setPage] = useState(0);
@@ -55,10 +51,6 @@ const BookList = () => {
 
   const addBook = () => {
     console.log('add book');
-  };
-
-  const refreshPage = () => {
-    window.location.reload();
   };
 
   const goToPage = (pageIndex: number) => {
@@ -113,73 +105,12 @@ const BookList = () => {
             ))}
           </tbody>
         </table>
-        <div id='book-list-pagination' className='flex flex-col gap-y-4 items-center justify-between border-t border-gray-200 bg-white p-4 md:flex-row sm:px-8'>
-          <div className='hidden md:block md:order-first'>
-            <p>Show {size} books per page</p>
-          </div>
-          <div className='order-first md:order-2'>
-            <nav className='isolate inline-flex -space-x-px rounded-md shadow-sm' aria-label='Pagination'>
-              { page > 1 && <button id='previous-page' onClick={() => goToPage(page - 1)} className='inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium hover:bg-gray-50 focus:z-20'>
-                <span className='sr-only'>Previous page</span>
-                <ChevronLeftIcon className='h-5 w-5' />
-              </button> }
-              { page > 0 && <button id='first-page' onClick={() => goToPage(0)} className='inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 focus:z-20'>1</button> }
-              { page > 1 && <span id='pages-separator-left' className='inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium cursor-default'>...</span> }
-              <button id='current-page-number' aria-current='page' disabled={true} className='z-10 inline-flex items-center border border-indigo-500 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 focus:z-20'>{page + 1}</button>
-              { page < (totalPages - 2) && <span id='pages-separator-right' className='inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium cursor-default'>...</span> }
-              { page < (totalPages - 1) && <button id='last-page' onClick={() => goToPage(totalPages - 1)} className='inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 focus:z-20'>{totalPages}</button> }
-              { page < (totalPages - 2) && <button id='next-page' onClick={() => goToPage(page + 1)} className='inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium hover:bg-gray-50 focus:z-20'>
-                <span className='sr-only'>Next page</span>
-                <ChevronRightIcon className='h-5 w-5' />
-              </button> }
-            </nav>
-          </div>
-          <div className='hidden md:block md:order-last'>
-            <p>Found {totalElements} book{ totalElements > 1 ? 's': ''}</p>
-          </div>
-          <div className='flex items-center w-full justify-between md:hidden'>
-            <p>Show {size} books per page</p>
-            <p>Found {totalElements} book{ totalElements > 1 ? 's': ''}</p>
-          </div>
-        </div>
+        <BookListPagination page={page} size={size} totalElements={totalElements} totalPages={totalPages} goToPage={goToPage} />
       </div>
     );
   } else {
     return (
-      <div id='book-list-empty' className='my-4 mx-4 rounded-lg bg-red-50 px-4 pt-5 pb-4 text-left shadow sm:my-8 sm:mx-auto sm:w-full sm:max-w-lg sm:p-6'>
-        <div>
-          <div className='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-50 border-2 border-yellow-400 hover:scale-125'>
-            <ExclamationTriangleIcon className='h-8 w-8 text-yellow-400' aria-hidden='true' />
-          </div>
-          <div className='mt-3 text-center sm:mt-5'>
-            <h3 className='text-lg font-medium leading-6'>
-              The book list is empty!
-            </h3>
-            <div className='mt-2'>
-              <p>There are no books at the moment.</p>
-              <p>Please come later or feel free to add a book.</p>
-            </div>
-          </div>
-        </div>
-        <div className='mt-5 grid sm:mt-6 sm:grid-cols-2 gap-3'>
-          <button
-            type='button'
-            className='inline-flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:text-sm'
-            onClick={refreshPage}
-          >
-            Refresh page
-            <ArrowPathIcon className='h-8 w-8' aria-hidden='true' />
-          </button>
-          <button
-            type='button'
-            className='inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm'
-            onClick={addBook}
-          >
-            Add book
-            <PlusCircleIcon className='h-8 w-8' aria-hidden='true' />
-          </button>
-        </div>
-      </div>
+      <BookListEmptyNotice addBook={addBook} />
     );
   }
 };
