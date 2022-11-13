@@ -2,13 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { SpringDataPage } from '../models/SpringDataPage';
 import { Book } from '../models/Book';
-import {
-  PlusCircleIcon,
-  BookOpenIcon,
-} from '@heroicons/react/24/outline';
 
 import BookListPagination from './BookListPagination';
 import BookListEmptyNotice from './BookListEmptyNotice';
+import BookEditCreate from './BookViewCreate';
 
 const BookList = () => {
   const [page, setPage] = useState(0);
@@ -44,14 +41,6 @@ const BookList = () => {
           console.error('Server error: could not obtain the list of books', error);
         }
       });
-  };
-
-  const viewBook = () => {
-    console.log('view book');
-  };
-
-  const addBook = () => {
-    console.log('add book');
   };
 
   const goToPage = (pageIndex: number) => {
@@ -100,13 +89,7 @@ const BookList = () => {
                   </div>
                 </form>
 
-                <button
-                  type='button'
-                  className='inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto'
-                >
-                    Add book
-                  <PlusCircleIcon className='h-7 w-7' aria-hidden='true' />
-                </button>
+                <BookEditCreate type='create' />
               </th>
             </tr>
           </thead>
@@ -124,14 +107,7 @@ const BookList = () => {
                     </div>
                   </div>
                   <div className='self-center'>
-                    <button
-                      type='button'
-                      className='whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto'
-                      onClick={viewBook}
-                    >
-                        View book
-                      <BookOpenIcon className='h-7 w-7' aria-hidden='true' />
-                    </button>
+                    <BookEditCreate type='view' bookId={book.id} />
                   </div>
                 </td>
               </tr>
@@ -143,7 +119,7 @@ const BookList = () => {
     );
   } else {
     return (
-      <BookListEmptyNotice addBook={addBook} />
+      <BookListEmptyNotice />
     );
   }
 };

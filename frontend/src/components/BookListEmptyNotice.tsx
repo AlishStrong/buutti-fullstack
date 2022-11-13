@@ -1,7 +1,8 @@
-import { ArrowPathIcon, ExclamationTriangleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
-import { BookListEmptyNoticeProps } from '../models/BookListEmptyNoticeProps';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon } from '@heroicons/react/20/solid';
+import BookEditCreate from './BookViewCreate';
 
-const BookListEmptyNotice = ({ addBook }: BookListEmptyNoticeProps) => {
+const BookListEmptyNotice = () => {
   const refreshPage = () => {
     window.location.reload();
   };
@@ -29,16 +30,9 @@ const BookListEmptyNotice = ({ addBook }: BookListEmptyNoticeProps) => {
           onClick={refreshPage}
         >
         Refresh page
-          <ArrowPathIcon className='h-8 w-8' aria-hidden='true' />
+          <ArrowPathIcon className='h-7 w-7' aria-hidden='true' />
         </button>
-        <button
-          type='button'
-          className='inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm'
-          onClick={addBook}
-        >
-        Add book
-          <PlusCircleIcon className='h-8 w-8' aria-hidden='true' />
-        </button>
+        <BookEditCreate type='create' />
       </div>
     </div>
   );
