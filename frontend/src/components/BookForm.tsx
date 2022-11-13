@@ -1,8 +1,10 @@
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Fragment, useState } from 'react';
+import { Book, BookForCreation } from '../models/Book';
 import { BookFormProps } from '../models/BookFormProps';
 import { BookFormField, FieldError } from '../models/FieldError';
 
-const BookForm = ({ currentBook, closeModal, cancelEdit }: BookFormProps) => {
+const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks }: BookFormProps) => {
   const [newTitle, setNewTitle] = useState(currentBook.title || '');
   const [newAuthor, setNewAuthor] = useState(currentBook.author || '');
   const [newDescription, setNewDescription] = useState(currentBook.description || '');
@@ -70,10 +72,42 @@ const BookForm = ({ currentBook, closeModal, cancelEdit }: BookFormProps) => {
 
   const create = () => {
     console.log('create');
+    const bookToCreate: BookForCreation = {
+      title: newTitle,
+      author: newAuthor,
+      description: newDescription
+    };
+    axios.post<Book, AxiosResponse<Book>>('/api/books', bookToCreate)
+      .then((r: AxiosResponse<Book, any>) => {
+        if (r.status === 201) {
+          return r.data;
+        } else {
+          console.error('An issue was faced while creating a new book'); // TODO: proper alert
+        }
+      })
+      .then((createdBook: Book | undefined) => {
+        // notify user
+        console.log('New book created', createdBook); // TODO: proper alert
+
+        // close modal
+        closeModal();
+
+        // refetch Book list
+        refetchBooks();
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status === 504) {
+          console.error('Server error: could not create a book', error); // TODO: proper alert
+        } else if (error.response?.status === 400) {
+          console.error('An issue was faced while creating a book', error.response?.data); // TODO: proper alert
+          // TODO: update FieldError states
+        } else {
+          console.error('An unknown issue was faced while creating a book', bookToCreate); // TODO: proper alert
+        }
+      });
   };
 
   const cancel = () => {
-    console.log('cancel');
     if (currentBook.id) {
       console.log('Cancel Book Edit');
       cancelEdit();

@@ -7,7 +7,7 @@ import { BookViewCreateProps } from '../models/BookViewCreateProps';
 import { BookData } from './BookData';
 import BookForm from './BookForm';
 
-const BookViewCreate = ({ type, bookId }: BookViewCreateProps) => {
+const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => {
   const [showModal, setShowModal] = useState(false);
   const [book, setBook] = useState<Book>({} as Book);
   const [editMode, setEditMode] = useState(type === 'view' ? false : true);
@@ -107,7 +107,7 @@ const BookViewCreate = ({ type, bookId }: BookViewCreateProps) => {
                   </Dialog.Title>
 
                   { !editMode && <BookData book={book} closeModal={closeModal} editBook={editBook} /> }
-                  { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} /> }
+                  { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} refetchBooks={refetchBooks} /> }
                 </Dialog.Panel>
               </Transition.Child>
             </div>

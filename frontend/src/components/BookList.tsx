@@ -89,7 +89,7 @@ const BookList = () => {
                   </div>
                 </form>
 
-                <BookEditCreate type='create' />
+                <BookEditCreate key={'create-book-button'} type='create' refetchBooks={getBooks} />
               </th>
             </tr>
           </thead>
@@ -107,7 +107,7 @@ const BookList = () => {
                     </div>
                   </div>
                   <div className='self-center'>
-                    <BookEditCreate type='view' bookId={book.id} />
+                    <BookEditCreate key={`view-book-${book.id}-button`} type='view' bookId={book.id} refetchBooks={getBooks} />
                   </div>
                 </td>
               </tr>
@@ -119,7 +119,7 @@ const BookList = () => {
     );
   } else {
     return (
-      <BookListEmptyNotice />
+      <BookListEmptyNotice refetchBooks={getBooks} />
     );
   }
 };
