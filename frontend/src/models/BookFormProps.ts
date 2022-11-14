@@ -5,4 +5,5 @@ export interface BookFormProps {
   closeModal: () => void;
   cancelEdit: () => void;
   refetchBooks: () => void;
+  updateBookState: () => void;
 }

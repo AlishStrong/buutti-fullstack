@@ -107,7 +107,7 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
                   </Dialog.Title>
 
                   { !editMode && <BookData book={book} closeModal={closeModal} editBook={editBook} /> }
-                  { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} refetchBooks={refetchBooks} /> }
+                  { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} refetchBooks={refetchBooks} updateBookState={getBook} /> }
                 </Dialog.Panel>
               </Transition.Child>
             </div>

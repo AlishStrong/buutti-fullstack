@@ -4,7 +4,7 @@ import { Book, BookForCreation } from '../models/Book';
 import { BookFormProps } from '../models/BookFormProps';
 import { BookFormField, FieldError } from '../models/FieldError';
 
-const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks }: BookFormProps) => {
+const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks, updateBookState }: BookFormProps) => {
   const [newTitle, setNewTitle] = useState(currentBook.title || '');
   const [newAuthor, setNewAuthor] = useState(currentBook.author || '');
   const [newDescription, setNewDescription] = useState(currentBook.description || '');
@@ -67,11 +67,46 @@ const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks }: BookFor
   };
 
   const update = () => {
-    console.log('update');
+    const bookToUpdate: Book = {
+      id: currentBook.id,
+      title: newTitle,
+      author: newAuthor,
+      description: newDescription
+    };
+    axios.put<Book, AxiosResponse<Book>>('/api/books', bookToUpdate)
+      .then((r: AxiosResponse<Book, any>) => {
+        if (r.status === 200) {
+          return r.data;
+        } else {
+          console.error('An issue was faced while creating a new book'); // TODO: proper alert
+        }
+      })
+      .then((updatedBook: Book | undefined) => {
+        // notify user
+        console.log('Book was updated', updatedBook); // TODO: proper alert
+
+        // refetch Book list
+        refetchBooks();
+
+        // update local book state
+        updateBookState();
+
+        // close modal
+        cancel();
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status === 504) {
+          console.error(`Server error: could not update the book ${bookToUpdate.id}`, error); // TODO: proper alert
+        } else if (error.response?.status === 400) {
+          console.error(`An issue was faced while updating the book ${bookToUpdate.id}:`, error.response?.data); // TODO: proper alert
+          // TODO: update FieldError states
+        } else {
+          console.error(`An unknown issue was faced while updating the book ${bookToUpdate.id}:`, error.response?.data); // TODO: proper alert
+        }
+      });
   };
 
   const create = () => {
-    console.log('create');
     const bookToCreate: BookForCreation = {
       title: newTitle,
       author: newAuthor,
@@ -89,11 +124,11 @@ const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks }: BookFor
         // notify user
         console.log('New book created', createdBook); // TODO: proper alert
 
-        // close modal
-        closeModal();
-
         // refetch Book list
         refetchBooks();
+
+        // close modal
+        closeModal();
       })
       .catch((error: AxiosError) => {
         if (error.response?.status === 504) {
