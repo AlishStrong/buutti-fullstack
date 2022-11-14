@@ -86,11 +86,11 @@ const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks, updateBoo
         cancel();
       })
       .catch((error: AxiosError<string, any>) => {
-        notify('red', `An issue was faced while deleting the book ${bookToUpdate.id}`, error.response?.data);
         if (error.response?.status === 400) {
-          console.error(`An issue was faced while updating the book ${bookToUpdate.id}:`, error.response?.data);
-          // TODO: update FieldError states
+          processErrorResponse(error.response?.data);
         }
+
+        notify('red', `An issue was faced while updating the book ${bookToUpdate.id}`, error.response?.data);
       });
   };
 
@@ -104,8 +104,6 @@ const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks, updateBoo
       .then((r: AxiosResponse<Book, any>) => {
         if (r.status === 201) {
           return r.data;
-        } else {
-          console.error('An issue was faced while creating a new book'); // TODO: proper alert
         }
       })
       .then(() => {
@@ -114,12 +112,27 @@ const BookForm = ({ currentBook, closeModal, cancelEdit, refetchBooks, updateBoo
         closeModal();
       })
       .catch((error: AxiosError<string, any>) => {
-        notify('red', 'An issue was faced while creating a book', error.response?.data);
         if (error.response?.status === 400) {
-          console.error('An issue was faced while creating a book', error.response?.data);
-          // TODO: update FieldError states
+          processErrorResponse(error.response?.data);
         }
+
+        notify('red', 'An issue was faced while creating a book', error.response?.data);
       });
+  };
+
+  const processErrorResponse = (message: string) => {
+    if (message.toLocaleLowerCase().includes('title')) {
+      setTitleError(titleError.setError(message));
+    } else if (message.toLocaleLowerCase().includes('author')) {
+      setAuthorError(authorError.setError(message));
+    } else if (message.toLocaleLowerCase().includes('description')) {
+      setDescriptionError(descriptionError.setError(message));
+    } else {
+      // The issue is not related to book's properties, but something else
+      // Perhaps the book is already gone
+      refetchBooks();
+      closeModal();
+    }
   };
 
   const cancel = () => {

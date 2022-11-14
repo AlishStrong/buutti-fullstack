@@ -28,6 +28,8 @@ const BookViewCreate = ({ type, bookId, refetchBooks, notify }: BookViewCreatePr
         })
         .catch((error: AxiosError<string, any>) => {
           notify('red', `An issue was faced while fetching the book ${bookId}.`, error.response?.data);
+          // Perhaps the book is already gone
+          refetchBooks();
         });
     } else {
       console.error('Book ID is invalid!');

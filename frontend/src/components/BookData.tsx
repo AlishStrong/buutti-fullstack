@@ -15,6 +15,9 @@ export const BookData = ({ book, closeModal, editBook, refetchBooks, notify }: B
       })
       .catch((error: AxiosError<string, any>) => {
         notify('red', `An issue was faced while deleting the book ${book.id}`, error.response?.data);
+        // Perhaps the book is already gone
+        refetchBooks();
+        closeModal();
       });
   };
 
