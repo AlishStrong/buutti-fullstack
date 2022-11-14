@@ -5,7 +5,7 @@ const BookListPagination = ({ size, page, totalElements, totalPages, goToPage }:
   return (
     <div id='book-list-pagination' className='flex flex-col gap-y-4 items-center justify-between border-t border-gray-200 bg-white p-4 md:flex-row sm:px-8'>
       <div className='hidden md:flex md:order-first md:basis-1/3'>
-        <p>Showing {size} books per page</p>
+        <p>Showing {size} {size > 1 ? 'books' : 'book'} per page</p>
       </div>
       <div className='order-first flex md:order-2 md:basis-1/3 md:justify-center'>
         <nav className='isolate inline-flex -space-x-px rounded-md' aria-label='Pagination'>
@@ -28,7 +28,7 @@ const BookListPagination = ({ size, page, totalElements, totalPages, goToPage }:
         <p>Found {totalElements} book{ totalElements > 1 ? 's': ''}</p>
       </div>
       <div className='flex items-center w-full justify-between md:hidden'>
-        <p>Show {size} books per page</p>
+        <p>Showing {size} {size > 1 ? 'books' : 'book'} per page</p>
         <p>Found {totalElements} book{ totalElements > 1 ? 's': ''}</p>
       </div>
     </div>
