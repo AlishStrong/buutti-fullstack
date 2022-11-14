@@ -21,8 +21,33 @@ services:
       # # MySQL Docker image can run initialization scripts: https://dev.mysql.com/doc/refman/8.0/en/docker-mysql-more-topics.html#docker-additional-init
       # # Scripts must be .sql or .sh and they need to be placed into /docker-entrypoint-initdb.d/
       # # Scripts execution order is done alphabetically!
-      # # :ro is to tell Docker to attach the volume as "read-only"!
+      # # :ro is to tell Docker to attach the volume as 'read-only'!
       - ./db:/docker-entrypoint-initdb.d/:ro
       # Set the character set and collation to utf8mb4 and utf8mb4_swedish_ci respectively
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_swedish_ci']
+  backend:
+    container_name: backend
+    depends_on:
+      - mysql-db
+    build: ./backend
+    ports:
+      # Open port 8098 for Host and 8080 for other services here:
+      # - locally running applications must make request to port 8098
+      # - services running in the same Docker network must communicate via port 8080
+      - '8098:8080'
+    environment:
+      - MYSQL_HOST=mysql-db
+      - MYSQL_PORT=3306
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD:?it must be defined in .env file}
+  frontend:
+    container_name: frontend
+    depends_on:
+      - backend
+    build: ./frontend
+    ports:
+      - 3000:3000
+    environment:
+      - REACT_APP_API_HOST=backend
+      - REACT_APP_API_PORT=8080
+
     
