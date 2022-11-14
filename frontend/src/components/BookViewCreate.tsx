@@ -51,6 +51,7 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
   };
 
   const closeModal = () => {
+    setEditMode(false);
     setShowModal(false);
   };
 
@@ -106,7 +107,7 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
                     { type === 'view' ? 'Book detailed information' : 'Add book' }
                   </Dialog.Title>
 
-                  { !editMode && <BookData book={book} closeModal={closeModal} editBook={editBook} /> }
+                  { !editMode && <BookData book={book} closeModal={closeModal} editBook={editBook} refetchBooks={refetchBooks} /> }
                   { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} refetchBooks={refetchBooks} updateBookState={getBook} /> }
                 </Dialog.Panel>
               </Transition.Child>

@@ -1,7 +1,34 @@
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Fragment } from 'react';
 import { BookDataProps } from '../models/BookDataProps';
 
-export const BookData = ({ book, closeModal, editBook }: BookDataProps) => {
+export const BookData = ({ book, closeModal, editBook, refetchBooks }: BookDataProps) => {
+
+  const deleteBook = () => {
+    axios.delete(`/api/books/${book.id}`)
+      .then((response: AxiosResponse) => {
+        if (response.status === 204) {
+          // refetch books
+          refetchBooks();
+
+          // close modal
+          closeModal();
+
+          // notify user
+          console.log(`Book ${book.id} was deleted!`);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status === 504) {
+          console.error(`Server error: could not delete the book ${book.id}.`, error); // TODO: proper alert
+        } else if (error.response?.status && [404, 400].includes(error.response?.status)) {
+          console.error(`An issue was faced while deleting the book ${book.id}.`, error.response?.data); // TODO: proper alert
+        } else {
+          console.error(`An unknown issue was faced while deleting the book ${book.id}.`); // TODO: proper alert
+        }
+      });
+  };
+
   return (
     <Fragment>
       <div id='book-data' className="shadow rounded-lg">
@@ -34,6 +61,14 @@ export const BookData = ({ book, closeModal, editBook }: BookDataProps) => {
           className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           onClick={editBook}
         >Edit book</button>
+
+        {/* Delete book button */}
+        <button
+          id='book-data-edit-button'
+          type="button"
+          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          onClick={deleteBook}
+        >Delete book</button>
 
         {/* Close modal button */}
         <button
