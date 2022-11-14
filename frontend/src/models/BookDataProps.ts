@@ -1,6 +1,7 @@
 import { Book } from './Book';
+import { BookListProps } from './BookListProps';
 
-export interface BookDataProps {
+export interface BookDataProps extends BookListProps {
   book: Book;
   closeModal: () => void;
   editBook: () => void;

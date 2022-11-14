@@ -6,8 +6,9 @@ import { Book } from '../models/Book';
 import BookListPagination from './BookListPagination';
 import BookListEmptyNotice from './BookListEmptyNotice';
 import BookEditCreate from './BookViewCreate';
+import { BookListProps } from '../models/BookListProps';
 
-const BookList = () => {
+const BookList = ({ notify }: BookListProps) => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [books, setBooks] = useState<Array<Book>>([]);
@@ -26,7 +27,7 @@ const BookList = () => {
         if (response.status === 200) {
           return response.data;
         } else if (response.status === 204) {
-          console.warn('There are no books at the moment');
+          notify('yellow', 'There are no books at the moment');
         }
       })
       .then(bookPage => {
@@ -39,6 +40,7 @@ const BookList = () => {
       .catch((error: AxiosError) => {
         if (error.response?.status === 504) {
           console.error('Server error: could not obtain the list of books', error);
+          notify('red', 'Server error: could not obtain the list of books');
         }
       });
   };
@@ -89,7 +91,7 @@ const BookList = () => {
                   </div>
                 </form>
 
-                <BookEditCreate key={'create-book-button'} type='create' refetchBooks={getBooks} />
+                <BookEditCreate notify={notify} key={'create-book-button'} type='create' refetchBooks={getBooks} />
               </th>
             </tr>
           </thead>
@@ -107,7 +109,7 @@ const BookList = () => {
                     </div>
                   </div>
                   <div className='self-center'>
-                    <BookEditCreate key={`view-book-${book.id}-button`} type='view' bookId={book.id} refetchBooks={getBooks} />
+                    <BookEditCreate notify={notify} key={`view-book-${book.id}-button`} type='view' bookId={book.id} refetchBooks={getBooks} />
                   </div>
                 </td>
               </tr>
@@ -119,7 +121,7 @@ const BookList = () => {
     );
   } else {
     return (
-      <BookListEmptyNotice refetchBooks={getBooks} />
+      <BookListEmptyNotice notify={notify} refetchBooks={getBooks} />
     );
   }
 };

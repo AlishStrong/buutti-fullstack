@@ -1,9 +1,9 @@
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { ArrowPathIcon } from '@heroicons/react/20/solid';
-import BookEditCreate from './BookViewCreate';
+import BookViewCreate from './BookViewCreate';
 import { BookListEmptyNoticeProps } from '../models/BookListEmptyNoticeProps';
 
-const BookListEmptyNotice = ({ refetchBooks }: BookListEmptyNoticeProps) => {
+const BookListEmptyNotice = ({ refetchBooks, notify }: BookListEmptyNoticeProps) => {
   const refreshPage = () => {
     window.location.reload();
   };
@@ -33,7 +33,7 @@ const BookListEmptyNotice = ({ refetchBooks }: BookListEmptyNoticeProps) => {
         Refresh page
           <ArrowPathIcon className='h-7 w-7' aria-hidden='true' />
         </button>
-        <BookEditCreate type='create' refetchBooks={refetchBooks} />
+        <BookViewCreate notify={notify} type='create' refetchBooks={refetchBooks} />
       </div>
     </div>
   );

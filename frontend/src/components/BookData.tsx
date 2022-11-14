@@ -2,30 +2,19 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Fragment } from 'react';
 import { BookDataProps } from '../models/BookDataProps';
 
-export const BookData = ({ book, closeModal, editBook, refetchBooks }: BookDataProps) => {
+export const BookData = ({ book, closeModal, editBook, refetchBooks, notify }: BookDataProps) => {
 
   const deleteBook = () => {
     axios.delete(`/api/books/${book.id}`)
       .then((response: AxiosResponse) => {
         if (response.status === 204) {
-          // refetch books
           refetchBooks();
-
-          // close modal
           closeModal();
-
-          // notify user
-          console.log(`Book ${book.id} was deleted!`);
+          notify('green', `Book ${book.id} was deleted!`);
         }
       })
-      .catch((error: AxiosError) => {
-        if (error.response?.status === 504) {
-          console.error(`Server error: could not delete the book ${book.id}.`, error); // TODO: proper alert
-        } else if (error.response?.status && [404, 400].includes(error.response?.status)) {
-          console.error(`An issue was faced while deleting the book ${book.id}.`, error.response?.data); // TODO: proper alert
-        } else {
-          console.error(`An unknown issue was faced while deleting the book ${book.id}.`); // TODO: proper alert
-        }
+      .catch((error: AxiosError<string, any>) => {
+        notify('red', `An issue was faced while deleting the book ${book.id}`, error.response?.data);
       });
   };
 

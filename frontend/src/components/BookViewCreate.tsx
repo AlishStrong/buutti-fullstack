@@ -7,7 +7,7 @@ import { BookViewCreateProps } from '../models/BookViewCreateProps';
 import { BookData } from './BookData';
 import BookForm from './BookForm';
 
-const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => {
+const BookViewCreate = ({ type, bookId, refetchBooks, notify }: BookViewCreateProps) => {
   const [showModal, setShowModal] = useState(false);
   const [book, setBook] = useState<Book>({} as Book);
   const [editMode, setEditMode] = useState(type === 'view' ? false : true);
@@ -18,8 +18,6 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
         .then((response: AxiosResponse<Book, any>) => {
           if (response.status === 200) {
             return response.data;
-          } else if (response.status === 404) {
-            console.warn(`Could not get book ${bookId}`); // TODO: proper alert
           }
         })
         .then(book => {
@@ -28,14 +26,8 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
             setShowModal(true);
           }
         })
-        .catch((error: AxiosError) => {
-          if (error.response?.status === 504) {
-            console.error(`Server error: could not obtain the book ${bookId}.`, error); // TODO: proper alert
-          } else if (error.response?.status && [404, 400].includes(error.response?.status)) {
-            console.error(`An issue was faced while fetching the book ${bookId}.`, error.response?.data); // TODO: proper alert
-          } else {
-            console.error(`An unknown issue was faced while fetching the book ${bookId}.`); // TODO: proper alert
-          }
+        .catch((error: AxiosError<string, any>) => {
+          notify('red', `An issue was faced while fetching the book ${bookId}.`, error.response?.data);
         });
     } else {
       console.error('Book ID is invalid!');
@@ -51,7 +43,6 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
   };
 
   const closeModal = () => {
-    setEditMode(false);
     setShowModal(false);
   };
 
@@ -107,8 +98,8 @@ const BookViewCreate = ({ type, bookId, refetchBooks }: BookViewCreateProps) => 
                     { type === 'view' ? 'Book detailed information' : 'Add book' }
                   </Dialog.Title>
 
-                  { !editMode && <BookData book={book} closeModal={closeModal} editBook={editBook} refetchBooks={refetchBooks} /> }
-                  { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} refetchBooks={refetchBooks} updateBookState={getBook} /> }
+                  { !editMode && <BookData book={book} closeModal={closeModal} editBook={editBook} refetchBooks={refetchBooks} notify={notify} /> }
+                  { editMode && <BookForm currentBook={book} closeModal={closeModal} cancelEdit={cancelBookEdit} refetchBooks={refetchBooks} updateBookState={getBook} notify={notify} /> }
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -190,8 +190,10 @@ public class BookService {
                     HttpStatus.BAD_REQUEST
             );
         } else {
-            ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase("title");
-
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withIgnorePaths("id", "author", "description")
+                    .withStringMatcher(ExampleMatcher.StringMatcher.EXACT)
+                    .withIgnoreCase();
             repository.findOne(Example.of(book, matcher)).ifPresent(foundBook -> {
                 if (!Objects.equals(foundBook.getId(), book.getId())) {
                     throw new BookException(

@@ -157,13 +157,13 @@ public class BookServiceTest {
                 testInvalidIdScenarios(RequestMethod.POST, invalidBook);
                 break;
             case "title":
-                testInvalidTitleScenarios(invalidBook);
+                testInvalidTitleScenarios(RequestMethod.POST, invalidBook);
                 break;
             case "author":
-                testInvalidAuthorScenarios(invalidBook);
+                testInvalidAuthorScenarios(RequestMethod.POST, invalidBook);
                 break;
             case "description":
-                testInvalidDescriptionScenarios(invalidBook);
+                testInvalidDescriptionScenarios(RequestMethod.POST, invalidBook);
                 break;
             default:
                 assertThrows(BookException.class, () -> {
@@ -222,13 +222,13 @@ public class BookServiceTest {
                 testInvalidIdScenarios(RequestMethod.PUT, invalidBook);
                 break;
             case "title":
-                testInvalidTitleScenarios(invalidBook);
+                testInvalidTitleScenarios(RequestMethod.PUT, invalidBook);
                 break;
             case "author":
-                testInvalidAuthorScenarios(invalidBook);
+                testInvalidAuthorScenarios(RequestMethod.PUT, invalidBook);
                 break;
             case "description":
-                testInvalidDescriptionScenarios(invalidBook);
+                testInvalidDescriptionScenarios(RequestMethod.PUT, invalidBook);
                 break;
             default:
                 assertThrows(BookException.class, () -> {
@@ -309,64 +309,104 @@ public class BookServiceTest {
         }
     }
 
-    private void testInvalidTitleScenarios(Book invalidBook) {
+    private void testInvalidTitleScenarios(RequestMethod method, Book invalidBook) {
         invalidBook.setTitle(null);
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, "No title was provided!");
 
         invalidBook.setTitle("");
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, "No title was provided!");
 
         invalidBook.setTitle(" ");
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, "No title was provided!");
 
 
         String tooBigTitle = Stream.generate(() -> "1").limit(256).collect(Collectors.joining());
         invalidBook.setTitle(tooBigTitle);
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, MessageFormat.format("Title can be maximum 255 characters long! Received title length was {0}", tooBigTitle.length()));
 
 
         invalidBook.setTitle(initialTitleOne);
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, MessageFormat.format("Title {0} already exists!", initialAuthor));
     }
 
-    private void testInvalidAuthorScenarios(Book invalidBook) {
+    private void testInvalidAuthorScenarios(RequestMethod method, Book invalidBook) {
         invalidBook.setAuthor(null);
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, "No author was provided!");
 
         invalidBook.setAuthor("");
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, "No author was provided!");
 
         invalidBook.setAuthor(" ");
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, "No author was provided!");
 
         String tooBigAuthor = Stream.generate(() -> "1").limit(256).collect(Collectors.joining());
         invalidBook.setAuthor(tooBigAuthor);
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, MessageFormat.format("Author name can be maximum 255 characters long! Received author name length was {0}", tooBigAuthor.length()));
     }
 
-    private void testInvalidDescriptionScenarios(Book invalidBook) {
+    private void testInvalidDescriptionScenarios(RequestMethod method, Book invalidBook) {
         String tooBigDescription = Stream.generate(() -> "1").limit(501).collect(Collectors.joining());
         invalidBook.setDescription(tooBigDescription);
         assertThrows(BookException.class, () -> {
-            service.createBook(invalidBook);
+            if (method.equals(RequestMethod.POST)) {
+                service.createBook(invalidBook);
+            } else {
+                service.updateBook(invalidBook);
+            } 
         }, MessageFormat.format("Description can be maximum 500 characters long! Received description length was {0}", tooBigDescription.length()));
     }
 }
